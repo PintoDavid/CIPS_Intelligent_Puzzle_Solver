@@ -48,6 +48,8 @@ namespace PuzzleSolver_IA
             this.CantidadPiezasPuzzle = new System.Windows.Forms.ComboBox();
             this.TextoCantidadPiezas = new System.Windows.Forms.Label();
             this.TextoCantidadNodos = new System.Windows.Forms.Label();
+            this.TextoTiempoIA = new System.Windows.Forms.Label();
+            this.TextoVariableTimeIA = new System.Windows.Forms.Label();
             this.GrupoContenidoPuzzle.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ImagenPuzzleMezcla)).BeginInit();
             this.GrupoContenidoImagenObjetivo.SuspendLayout();
@@ -306,12 +308,38 @@ namespace PuzzleSolver_IA
             this.TextoCantidadNodos.TabIndex = 20;
             this.TextoCantidadNodos.Text = "Cantidad nodos: 0";
             // 
+            // TextoTiempoIA
+            // 
+            this.TextoTiempoIA.AutoSize = true;
+            this.TextoTiempoIA.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextoTiempoIA.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.TextoTiempoIA.Location = new System.Drawing.Point(528, 536);
+            this.TextoTiempoIA.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.TextoTiempoIA.Name = "TextoTiempoIA";
+            this.TextoTiempoIA.Size = new System.Drawing.Size(84, 25);
+            this.TextoTiempoIA.TabIndex = 21;
+            this.TextoTiempoIA.Text = "Tiempo:";
+            // 
+            // TextoVariableTimeIA
+            // 
+            this.TextoVariableTimeIA.AutoSize = true;
+            this.TextoVariableTimeIA.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextoVariableTimeIA.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.TextoVariableTimeIA.Location = new System.Drawing.Point(606, 536);
+            this.TextoVariableTimeIA.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.TextoVariableTimeIA.Name = "TextoVariableTimeIA";
+            this.TextoVariableTimeIA.Size = new System.Drawing.Size(79, 25);
+            this.TextoVariableTimeIA.TabIndex = 22;
+            this.TextoVariableTimeIA.Text = "0:00:00";
+            // 
             // Pantalla_Inicial
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(788, 570);
+            this.Controls.Add(this.TextoVariableTimeIA);
+            this.Controls.Add(this.TextoTiempoIA);
             this.Controls.Add(this.TextoCantidadNodos);
             this.Controls.Add(this.TextoCantidadPiezas);
             this.Controls.Add(this.CantidadPiezasPuzzle);
@@ -363,6 +391,8 @@ namespace PuzzleSolver_IA
         private System.Windows.Forms.ComboBox CantidadPiezasPuzzle;
         private System.Windows.Forms.Label TextoCantidadPiezas;
         private System.Windows.Forms.Label TextoCantidadNodos;
+        private System.Windows.Forms.Label TextoTiempoIA;
+        private System.Windows.Forms.Label TextoVariableTimeIA;
     }
 }
 
