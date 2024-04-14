@@ -15,6 +15,10 @@ namespace PuzzleSolver_IA
         //areglos y bitmaps para subdivisiones
         private Bitmap originalImage;
 
+        // Variables para mantener el estado del espacio vacío
+        private int emptyButtonRow = -1;
+        private int emptyButtonColumn = -1;
+
         //===============================================================================================
         //Contenido que se vera al iniciar la apliacion
         //===============================================================================================
@@ -59,7 +63,8 @@ namespace PuzzleSolver_IA
 
             // Suscribirse al evento Load del formulario
             this.Load += Pantalla_Inicial_Load;
-        }
+
+    }
 
         //===============================================================================================
         //Ya que es predeterminado el tipo puzzle nuemrico, pues se carga de primero su matriz
@@ -144,6 +149,7 @@ namespace PuzzleSolver_IA
         //Funciones para asignar contenido a botones para puzzle
         //===============================================================================================
 
+        //Puzzle imagen
         //Funcion para mostrar la matriz de botones cuando puzzle es imagen
         private void CargarImagenEnPanelPuzzleContainer(Bitmap image)
         {
@@ -207,7 +213,7 @@ namespace PuzzleSolver_IA
             panelSolucionPuzzle.BackColor = Color.LightGray; // Establecer el color de fondo del panel de solución
         }
 
-
+        //Puzzle numeros
         //Funcion para mostrar la matriz de botones cuando puzzle es Numeros
         private void MostrarMatrizBotones()
         {
@@ -218,10 +224,9 @@ namespace PuzzleSolver_IA
             if (CantidadPiezasPuzzle.SelectedItem != null)
             {
                 int divisions = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
-
                 int buttonSize = panelPuzzleContainer.Width / divisions;
-
                 int count = 1;
+
                 for (int i = 0; i < divisions; i++)
                 {
                     for (int j = 0; j < divisions; j++)
@@ -230,25 +235,37 @@ namespace PuzzleSolver_IA
                         int x = j * buttonSize;
                         int y = i * buttonSize;
 
+                        // Crear un botón y asignarle un nombre
+                        Button button = new Button();
+                        button.Width = buttonSize;
+                        button.Height = buttonSize;
+                        button.Location = new Point(x, y);
+                        button.Font = new Font("Arial", buttonSize / 4);
+                        button.FlatStyle = FlatStyle.Flat;
+                        button.FlatAppearance.BorderSize = 1;
+                        button.BackColor = Color.Gray;
+
+                        // Asignar un nombre al botón
+                        button.Name = "button" + count.ToString();
+
                         // Verificar si es el último botón
                         if (count < divisions * divisions)
                         {
-                            // Crear un botón con el número correspondiente y agregarlo al panelPuzzleContainer
-                            Button button = new Button();
-                            button.Width = buttonSize;
-                            button.Height = buttonSize;
-                            button.Location = new Point(x, y);
                             button.Text = count.ToString();
-                            button.Font = new Font("Arial", buttonSize / 3);
-                            button.FlatStyle = FlatStyle.Flat;
-                            button.FlatAppearance.BorderSize = 0;
-                            button.BackColor = Color.Gray;
-
-                            // Agregar el botón al panelPuzzleContainer
-                            panelPuzzleContainer.Controls.Add(button);
-
                             count++;
                         }
+                        else
+                        {
+                            button.Name = "button" + (divisions*divisions);
+                            // No asignar ningún texto al botón vacío
+                            //button.Text = "";
+                        }
+
+                        // Suscribir el botón al evento de clic
+                        button.Click += BotonMatriz_Click;
+
+                        // Agregar el botón al panelPuzzleContainer
+                        panelPuzzleContainer.Controls.Add(button);
                     }
                 }
 
@@ -266,32 +283,80 @@ namespace PuzzleSolver_IA
                 // Agregar el PictureBox al panelSolucionPuzzle
                 panelSolucionPuzzle.Controls.Add(pictureBox);
             }
+
+            MezclarBotones();
+
             // Establecer el color de fondo del panel
             panelPuzzleContainer.BackColor = Color.LightGray;
             panelSolucionPuzzle.BackColor = Color.LightGray; // Establecer el color de fondo del panel de solución
         }
 
-        //Funcion mezcla de la matriz de botones
-        private void MezclarBotones(List<Button> buttons)
+        // Declarar una variable global para almacenar el botón seleccionado
+        private Button botonSeleccionado = null;
+
+        private void BotonMatriz_Click(object sender, EventArgs e)
         {
-            Random rng = new Random();
-            int n = buttons.Count;
-            while (n > 1)
+            Button botonClickeado = sender as Button;
+
+            // Si el botón clickeado es el mismo que ya está seleccionado, deseleccionarlo
+            if (botonSeleccionado == botonClickeado)
             {
-                n--;
-                int k = rng.Next(n + 1);
-                Button value = buttons[k];
-                buttons[k] = buttons[n];
-                buttons[n] = value;
+                botonClickeado.BackColor = Color.Gray;
+                botonSeleccionado = null;
+                return;
             }
 
-            // Limpiar los botones actuales en el panelPuzzleContainer
-            panelPuzzleContainer.Controls.Clear();
-
-            // Agregar los botones mezclados al panelPuzzleContainer
-            foreach (Button button in buttons)
+            // Si el botón clickeado es un botón numerado (button1 hasta buttonN^2-1), permitir selección y deselección
+            if (botonClickeado.Name.StartsWith("button"))
             {
-                panelPuzzleContainer.Controls.Add(button);
+                if (botonSeleccionado != null)
+                {
+                    botonSeleccionado.BackColor = Color.Gray;
+                    botonSeleccionado = null;
+                }
+                else
+                {
+                    botonSeleccionado = botonClickeado;
+                    botonSeleccionado.BackColor = Color.Blue;
+                }
+            }
+            // Si el botón clickeado es el botón vacío (botonN^2), permitir mover el botón seleccionado
+            else if (botonClickeado.Name == "button" + (CantidadPiezasPuzzle.SelectedIndex + 1) * (CantidadPiezasPuzzle.SelectedIndex + 1))
+            {
+                if (botonSeleccionado != null)
+                {
+                    // Obtener las coordenadas del botón clickeado y del botón seleccionado
+                    Point posBotonClickeado = botonClickeado.Location;
+                    Point posBotonSeleccionado = botonSeleccionado.Location;
+
+                    // Intercambiar las posiciones de los botones
+                    botonSeleccionado.Location = posBotonClickeado;
+                    botonClickeado.Location = posBotonSeleccionado;
+
+                    // Deseleccionar el botón seleccionado
+                    botonSeleccionado.BackColor = Color.Gray;
+                    botonSeleccionado = null;
+                }
+            }
+        }
+
+
+        //Funcion mezcla de la matriz de botones
+        private void MezclarBotones()
+        {
+            Random rnd = new Random();
+
+            // Obtener la lista de botones en el panelPuzzleContainer
+            List<Button> buttons = panelPuzzleContainer.Controls.OfType<Button>().ToList();
+
+            // Mezclar los botones aleatoriamente
+            for (int i = 0; i < buttons.Count; i++)
+            {
+                int randomIndex = rnd.Next(i, buttons.Count);
+                // Intercambiar los botones en las posiciones i y randomIndex
+                Point tempLocation = buttons[i].Location;
+                buttons[i].Location = buttons[randomIndex].Location;
+                buttons[randomIndex].Location = tempLocation;
             }
         }
 
@@ -392,11 +457,11 @@ namespace PuzzleSolver_IA
             {
                 int divisions = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
                 List<Button> buttons = panelPuzzleContainer.Controls.OfType<Button>().ToList();
-                MezclarBotones(buttons);
             }
             else
             {
                 MostrarMatrizBotones();
+                MezclarBotones();
             }
         }
 
@@ -404,10 +469,6 @@ namespace PuzzleSolver_IA
         private void BotonResolver_Click(object sender, EventArgs e)
         {
             if (SeleccionSolucionInteligente.SelectedItem == "Profundidad")
-            {
-
-            }
-            if (SeleccionSolucionInteligente.SelectedItem == "Heurística")
             {
 
             }
