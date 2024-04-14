@@ -15,6 +15,9 @@ namespace PuzzleSolver_IA
         //areglos y bitmaps para subdivisiones
         private Bitmap originalImage;
 
+        //===============================================================================================
+        //Contenido que se vera al iniciar la apliacion
+        //===============================================================================================
         public Pantalla_Inicial()//nombre del form1
         {
             InitializeComponent();
@@ -48,92 +51,357 @@ namespace PuzzleSolver_IA
             // Actualizar imagen antes de mezclarla en tiempo real
             CantidadPiezasPuzzle.SelectedIndexChanged += CantidadPiezasPuzzle_SelectedIndexChanged;
 
+            // Llama al método para mostrar la matriz de botones con números y fondo gris al iniciar el programa
+            MostrarMatrizBotones();
+
             //Boton para mezclar las piezas
             BotonMezclarImagen.Click += BotonMezclarImagen_Click;
-    }
 
-    private void BotonCargarImagen_Click(object sender, EventArgs e)
+            // Suscribirse al evento Load del formulario
+            this.Load += Pantalla_Inicial_Load;
+        }
+
+        //===============================================================================================
+        //Ya que es predeterminado el tipo puzzle nuemrico, pues se carga de primero su matriz
+        //===============================================================================================
+        private void Pantalla_Inicial_Load(object sender, EventArgs e)
+        {
+            // Llamar al método para mostrar la matriz de botones al iniciar el programa
+            MostrarMatrizBotones();
+        }
+
+        //===============================================================================================
+        //Cambios de comboboxes utilizados
+        //===============================================================================================
+
+        //Combobox para cambiar cantidad de piezas de la matriz de botones
+        private void CantidadPiezasPuzzle_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (SeleccionTipoPuzzle.SelectedItem == "Imagen")
+            {
+                CargarImagenEnPanelPuzzleContainer(originalImage);
+            }
+            else
+            {
+                MostrarMatrizBotones();
+            }
+        }
+
+        //Combobox para cambiar el tipo de puzzle
+        private void SeleccionTipoPuzzle_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (SeleccionTipoPuzzle.SelectedItem != "Imagen")
+            {
+                // Eliminar controles anteriores (en caso de que los haya)
+                panelPuzzleContainer.Controls.Clear();
+                panelSolucionPuzzle.Controls.Clear();
+
+                // Ocultar botones para cargar y eliminar imagen
+                BotonEliminarImagen.Visible = false;
+                BotonCargarImagen.Visible = false;
+
+                // Habilitar el botón de mezclar imagen
+                BotonMezclarImagen.Enabled = true;
+                BotonMezclarImagen.BackColor = Color.White;
+
+                // Eliminar la imagen del panelSolucionPuzzle
+                panelSolucionPuzzle.BackgroundImage = null;
+                panelSolucionPuzzle.Controls.Clear();
+
+                // Habilitar el puzzle actualmente seleccionado
+                CantidadPiezasPuzzle.Enabled = true;
+
+                // Mostrar matriz de botones en el panelPuzzleContainer
+                MostrarMatrizBotones();
+            }
+            else
+            {
+                // Eliminar controles anteriores (en caso de que los haya)
+                panelPuzzleContainer.Controls.Clear();
+                panelSolucionPuzzle.Controls.Clear();
+
+                // Mostrar botones para cargar y eliminar imagen
+                BotonEliminarImagen.Visible = true;
+                BotonCargarImagen.Visible = true;
+
+                // Deshabilitar el botón de mezclar imagen
+                BotonMezclarImagen.Enabled = false;
+                BotonMezclarImagen.BackColor = Color.LightGray;
+
+                // Reiniciar la imagen del panelSolucionPuzzle
+                panelSolucionPuzzle.BackgroundImage = null;
+                panelSolucionPuzzle.Controls.Clear();
+
+                // Deshabilitar el puzzle actualmente seleccionado
+                CantidadPiezasPuzzle.Enabled = false;
+
+                BotonEliminarImagen.Enabled = false;
+                BotonEliminarImagen.BackColor = Color.LightGray;
+            }
+        }
+
+        //===============================================================================================
+        //Funciones para asignar contenido a botones para puzzle
+        //===============================================================================================
+
+        //Funcion para mostrar la matriz de botones cuando puzzle es imagen
+        private void CargarImagenEnPanelPuzzleContainer(Bitmap image)
+        {
+            // Eliminar controles anteriores (en caso de que los haya)
+            panelPuzzleContainer.Controls.Clear();
+            panelSolucionPuzzle.Controls.Clear(); // Limpiar el panel de solución
+
+            if (CantidadPiezasPuzzle.SelectedItem != null)
+            {
+                int divisions = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
+
+                int buttonSize = panelPuzzleContainer.Width / divisions;
+
+                int count = 1;
+                for (int i = 0; i < divisions; i++)
+                {
+                    for (int j = 0; j < divisions; j++)
+                    {
+                        // Calcular la posición de cada botón
+                        int x = j * buttonSize;
+                        int y = i * buttonSize;
+
+                        // Verificar si es el último botón
+                        if (count < divisions * divisions)
+                        {
+                            // Crear un botón con el número correspondiente y agregarlo al panelPuzzleContainer
+                            Button button = new Button();
+                            button.Width = buttonSize;
+                            button.Height = buttonSize;
+                            button.Location = new Point(x, y);
+                            button.BackgroundImage = originalImage;
+                            button.BackgroundImageLayout = ImageLayout.Stretch;
+                            button.FlatStyle = FlatStyle.Flat;
+                            button.FlatAppearance.BorderSize = 0;
+                            button.BackColor = Color.Gray;
+
+                            // Agregar el botón al panelPuzzleContainer
+                            panelPuzzleContainer.Controls.Add(button);
+
+                            count++;
+                        }
+                    }
+                }
+
+                // Tomar una captura de pantalla del panelPuzzleContainer
+                Bitmap puzzleImage = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
+                panelPuzzleContainer.DrawToBitmap(puzzleImage, new Rectangle(0, 0, panelPuzzleContainer.Width, panelPuzzleContainer.Height));
+
+                // Crear un PictureBox para mostrar la imagen del puzzle en el panelSolucionPuzzle
+                PictureBox pictureBox = new PictureBox();
+                pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+                pictureBox.Width = panelSolucionPuzzle.Width;
+                pictureBox.Height = panelSolucionPuzzle.Height;
+                pictureBox.Image = originalImage;
+
+                // Agregar el PictureBox al panelSolucionPuzzle
+                panelSolucionPuzzle.Controls.Add(pictureBox);
+            }
+            // Establecer el color de fondo del panel
+            panelPuzzleContainer.BackColor = Color.LightGray;
+            panelSolucionPuzzle.BackColor = Color.LightGray; // Establecer el color de fondo del panel de solución
+        }
+
+
+        //Funcion para mostrar la matriz de botones cuando puzzle es Numeros
+        private void MostrarMatrizBotones()
+        {
+            // Eliminar controles anteriores (en caso de que los haya)
+            panelPuzzleContainer.Controls.Clear();
+            panelSolucionPuzzle.Controls.Clear(); // Limpiar el panel de solución
+
+            if (CantidadPiezasPuzzle.SelectedItem != null)
+            {
+                int divisions = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
+
+                int buttonSize = panelPuzzleContainer.Width / divisions;
+
+                int count = 1;
+                for (int i = 0; i < divisions; i++)
+                {
+                    for (int j = 0; j < divisions; j++)
+                    {
+                        // Calcular la posición de cada botón
+                        int x = j * buttonSize;
+                        int y = i * buttonSize;
+
+                        // Verificar si es el último botón
+                        if (count < divisions * divisions)
+                        {
+                            // Crear un botón con el número correspondiente y agregarlo al panelPuzzleContainer
+                            Button button = new Button();
+                            button.Width = buttonSize;
+                            button.Height = buttonSize;
+                            button.Location = new Point(x, y);
+                            button.Text = count.ToString();
+                            button.Font = new Font("Arial", buttonSize / 3);
+                            button.FlatStyle = FlatStyle.Flat;
+                            button.FlatAppearance.BorderSize = 0;
+                            button.BackColor = Color.Gray;
+
+                            // Agregar el botón al panelPuzzleContainer
+                            panelPuzzleContainer.Controls.Add(button);
+
+                            count++;
+                        }
+                    }
+                }
+
+                // Tomar una captura de pantalla del panelPuzzleContainer
+                Bitmap puzzleImage = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
+                panelPuzzleContainer.DrawToBitmap(puzzleImage, new Rectangle(0, 0, panelPuzzleContainer.Width, panelPuzzleContainer.Height));
+
+                // Crear un PictureBox para mostrar la imagen del puzzle en el panelSolucionPuzzle
+                PictureBox pictureBox = new PictureBox();
+                pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+                pictureBox.Width = panelSolucionPuzzle.Width;
+                pictureBox.Height = panelSolucionPuzzle.Height;
+                pictureBox.Image = puzzleImage;
+
+                // Agregar el PictureBox al panelSolucionPuzzle
+                panelSolucionPuzzle.Controls.Add(pictureBox);
+            }
+            // Establecer el color de fondo del panel
+            panelPuzzleContainer.BackColor = Color.LightGray;
+            panelSolucionPuzzle.BackColor = Color.LightGray; // Establecer el color de fondo del panel de solución
+        }
+
+        //Funcion mezcla de la matriz de botones
+        private void MezclarBotones(List<Button> buttons)
+        {
+            Random rng = new Random();
+            int n = buttons.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                Button value = buttons[k];
+                buttons[k] = buttons[n];
+                buttons[n] = value;
+            }
+
+            // Limpiar los botones actuales en el panelPuzzleContainer
+            panelPuzzleContainer.Controls.Clear();
+
+            // Agregar los botones mezclados al panelPuzzleContainer
+            foreach (Button button in buttons)
+            {
+                panelPuzzleContainer.Controls.Add(button);
+            }
+        }
+
+        //===============================================================================================
+        //Funciones botones de interfaz
+        //===============================================================================================
+
+        //Boton para resetear o reiniciar los parametros para volver a mezclar la imagen
+        private void BotonReiniciarImagen_Click(object sender, EventArgs e)
+        {
+            CantidadPiezasPuzzle.Enabled = true;
+
+            BotonEliminarImagen.Enabled = true;
+            BotonEliminarImagen.BackColor = Color.White;
+
+            BotonReiniciarImagen.Enabled = false;
+            BotonReiniciarImagen.BackColor = Color.LightGray;
+
+            BotonResolver.Enabled = false;
+            BotonResolver.BackColor = Color.LightGray;
+
+            SeleccionSolucionInteligente.Enabled = false;
+        }
+
+        //Boton para cargar imagen cuando tipo puzzle es imagen
+        private void BotonCargarImagen_Click(object sender, EventArgs e)
         {
             OpenFileDialog archivo = new OpenFileDialog();
             archivo.Filter = "archivos de imágenes (*.png; *.jpg; *.jpeg) | *.png; *.jpg; *.jpeg";
 
-            if (archivo.ShowDialog()==DialogResult.OK)
+            if (archivo.ShowDialog() == DialogResult.OK)
             {
                 originalImage = new Bitmap(archivo.FileName);
-                ImagenObjetivo.Image = originalImage;    //Objetivo imagen "original"
 
-                //llama a la funcion para convertirla en slides en ImagenPuzzleMezcla.Image
-                int divisiones = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
-                DivisionImagenPiezas(divisiones, ImagenPuzzleMezcla);
+                // Llamar a la función para cargar la imagen en el panelPuzzleContainer
+                CargarImagenEnPanelPuzzleContainer(originalImage);
 
-                //como ya existe una imagen, si deja quitarla
+                // Como ya existe una imagen, permite eliminarla y desactiva el botón de cargar
                 BotonEliminarImagen.Enabled = true;
                 BotonEliminarImagen.BackColor = Color.White;
                 BotonCargarImagen.Enabled = false;
                 BotonCargarImagen.BackColor = Color.LightGray;
 
-                //Estado de mezcla de imagen
-                BotonMezclarImagen.Enabled = true;
-                BotonMezclarImagen.BackColor = Color.White;
-            }
-            else BotonCargarImagen.BackColor = Color.White;
-        }
-
-        private void SeleccionTipoPuzzle_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if(SeleccionTipoPuzzle.SelectedItem != "Imagen")
-            {
-                //propiedad de botones para controlar carga de imagenes
-                BotonEliminarImagen.Visible = false;
-                BotonCargarImagen.Visible = false;
-
-                //Estado de mezcla de imagen
+                // Estado de mezcla de imagen
                 BotonMezclarImagen.Enabled = true;
                 BotonMezclarImagen.BackColor = Color.White;
 
-                //Elimina y resetea imagen anterior al cambiar tipo puzzle
-                ImagenObjetivo.Image = null;
-                ImagenPuzzleMezcla.Image = null;
+                CantidadPiezasPuzzle.Enabled = true;
+                SeleccionTipoPuzzle.Enabled = false;
             }
             else
             {
-                //Elimina y resetea imagen anterior al cambiar tipo puzzle
-                ImagenObjetivo.Image = null;
-                ImagenPuzzleMezcla.Image = null;
-
-                //propiedad de botones para controlar carga de imagenes
-                BotonEliminarImagen.Visible = true;
-                BotonCargarImagen.Visible = true;
-
-                //si no hay una imagen cargada, no deja quitarla (obviamente)
-                BotonEliminarImagen.Enabled = false;
-                BotonEliminarImagen.BackColor = Color.LightGray;
-                BotonCargarImagen.Enabled = true;
+                CantidadPiezasPuzzle.Enabled = false;
                 BotonCargarImagen.BackColor = Color.White;
 
-                //Estado de mezcla de imagen
-                BotonMezclarImagen.Enabled = false;
-                BotonMezclarImagen.BackColor = Color.LightGray;
+                SeleccionTipoPuzzle.Enabled = true;
             }
         }
 
+        //Boton para elimar imagen cuando tipo puzzle es imagen
         private void BotonEliminarImagen_Click(object sender, EventArgs e)
         {
-            ImagenObjetivo.Image = null;
-            ImagenPuzzleMezcla.Image = null;
+            // Eliminar la imagen del panelSolucionPuzzle
+            panelSolucionPuzzle.BackgroundImage = null;
+            panelSolucionPuzzle.Controls.Clear();
 
-            //como ya NO existe una imagen, deja quitarla, pero no cargarla nuevamente
+            // Eliminar la matriz de botones en panelPuzzleContainer
+            panelPuzzleContainer.Controls.Clear();
+
+            // Habilitar el tipo puzzle para seleccionar nuevamente
+            SeleccionTipoPuzzle.Enabled = true;
+            CantidadPiezasPuzzle.Enabled = false;
+
+            // Mostrar botón de cargar imagen y ocultar botón de eliminar imagen
             BotonEliminarImagen.Enabled = false;
             BotonEliminarImagen.BackColor = Color.LightGray;
             BotonCargarImagen.Enabled = true;
             BotonCargarImagen.BackColor = Color.White;
-
-            //Estado de mezcla de imagen
-            BotonMezclarImagen.Enabled = false;
-            BotonMezclarImagen.BackColor = Color.LightGray;
         }
 
-        private void SeleccionSolucionInteligente_SelectedIndexChanged(object sender, EventArgs e)
+        //Boton para mezclar la matriz de botones
+        private void BotonMezclarImagen_Click(object sender, EventArgs e)
+        {
+            CantidadPiezasPuzzle.Enabled = false;
+
+            BotonEliminarImagen.Enabled = false;
+            BotonEliminarImagen.BackColor = Color.LightGray;
+
+            BotonReiniciarImagen.Enabled = true;
+            BotonReiniciarImagen.BackColor = Color.White;
+
+            BotonResolver.Enabled = true;
+            BotonResolver.BackColor = Color.White;
+
+            SeleccionSolucionInteligente.Enabled = true;
+
+            if (SeleccionTipoPuzzle.SelectedItem == "Imagen")
+            {
+                int divisions = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
+                List<Button> buttons = panelPuzzleContainer.Controls.OfType<Button>().ToList();
+                MezclarBotones(buttons);
+            }
+            else
+            {
+                MostrarMatrizBotones();
+            }
+        }
+
+        //Que metodo va a realizar para resolverlo - Depende del combobox SeleccionSolucionInteligente
+        private void BotonResolver_Click(object sender, EventArgs e)
         {
             if (SeleccionSolucionInteligente.SelectedItem == "Profundidad")
             {
@@ -147,76 +415,6 @@ namespace PuzzleSolver_IA
             {
 
             }
-        }
-
-        //Funciones para sibdividir la imagen
-        private void DivisionImagenPiezas(int divisions, PictureBox ImagenPuzzleMezcla)
-        {
-            int rows = divisions;
-            int columns = divisions;
-
-            int pieceWidth = originalImage.Width / columns;
-            int pieceHeight = originalImage.Height / rows;
-
-            // Crear una imagen que contendrá todas las piezas del rompecabezas
-            Bitmap combinedImage = new Bitmap(originalImage.Width, originalImage.Height);
-
-            using (Graphics g = Graphics.FromImage(combinedImage))
-            {
-                // Dibujar las piezas del rompecabezas con márgenes
-                for (int i = 0; i < rows; i++)
-                {
-                    for (int j = 0; j < columns; j++)
-                    {
-                        // Calcular la posición de la pieza en la imagen combinada
-                        int x = j * pieceWidth;
-                        int y = i * pieceHeight;
-
-                        // Cortar la pieza del rompecabezas original
-                        Rectangle cropRect = new Rectangle(j * pieceWidth, i * pieceHeight, pieceWidth, pieceHeight);
-                        Bitmap piece = originalImage.Clone(cropRect, originalImage.PixelFormat);
-
-                        // Dibujar la pieza en la imagen combinada
-                        g.DrawImage(piece, x, y, pieceWidth, pieceHeight);
-
-                        // Dibujar el borde alrededor de la pieza
-                        Pen pen = new Pen(Color.Black, 2); // Puedes ajustar el color y el grosor del borde según tus necesidades
-                        g.DrawRectangle(pen, new Rectangle(x, y, pieceWidth, pieceHeight));
-                    }
-                }
-
-                // Rellenar la última celda con un color de fondo diferente
-                Rectangle lastCellRect = new Rectangle((columns - 1) * pieceWidth, (rows - 1) * pieceHeight, pieceWidth, pieceHeight);
-                using (Brush brush = new SolidBrush(Color.Gray)) // Puedes ajustar el color del fondo según tus necesidades
-                {
-                    g.FillRectangle(brush, lastCellRect);
-                }
-            }
-
-            // Mostrar la imagen combinada en el PictureBox
-            ImagenPuzzleMezcla.Image = combinedImage;
-        }
-
-        private void CantidadPiezasPuzzle_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            int divisions = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
-            DivisionImagenPiezas(divisions, ImagenPuzzleMezcla);
-        }
-
-        //Funciones para mezclar las piezas
-        private void BotonMezclarImagen_Click(object sender, EventArgs e)
-        {
-            CantidadPiezasPuzzle.Enabled = false;
-
-            BotonEliminarImagen.Enabled = false;
-            BotonEliminarImagen.BackColor = Color.LightGray;
-
-            MezclarPiezas();
-        }
-
-        private void MezclarPiezas()
-        {
-            
         }
     }
 }
