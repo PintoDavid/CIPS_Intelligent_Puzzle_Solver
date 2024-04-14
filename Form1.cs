@@ -19,6 +19,9 @@ namespace PuzzleSolver_IA
         private int emptyButtonRow = -1;
         private int emptyButtonColumn = -1;
 
+        private Button botonSeleccionado = null;
+        private Point botonSeleccionadoPos; // Almacena las coordenadas del primer botón seleccionado
+
         //===============================================================================================
         //Contenido que se vera al iniciar la apliacion
         //===============================================================================================
@@ -257,8 +260,6 @@ namespace PuzzleSolver_IA
                         else
                         {
                             button.Name = "button" + (divisions*divisions);
-                            // No asignar ningún texto al botón vacío
-                            //button.Text = "";
                         }
 
                         // Suscribir el botón al evento de clic
@@ -283,17 +284,8 @@ namespace PuzzleSolver_IA
                 // Agregar el PictureBox al panelSolucionPuzzle
                 panelSolucionPuzzle.Controls.Add(pictureBox);
             }
-
             MezclarBotones();
-
-            // Establecer el color de fondo del panel
-            panelPuzzleContainer.BackColor = Color.LightGray;
-            panelSolucionPuzzle.BackColor = Color.LightGray; // Establecer el color de fondo del panel de solución
         }
-
-        // Declarar una variable global para almacenar el botón seleccionado
-        private Button botonSeleccionado = null;
-
         private void BotonMatriz_Click(object sender, EventArgs e)
         {
             Button botonClickeado = sender as Button;
@@ -307,21 +299,16 @@ namespace PuzzleSolver_IA
             }
 
             // Si el botón clickeado es un botón numerado (button1 hasta buttonN^2-1), permitir selección y deselección
-            if (botonClickeado.Name.StartsWith("button"))
+            if (botonClickeado.Text != "")
             {
                 if (botonSeleccionado != null)
                 {
                     botonSeleccionado.BackColor = Color.Gray;
-                    botonSeleccionado = null;
                 }
-                else
-                {
-                    botonSeleccionado = botonClickeado;
-                    botonSeleccionado.BackColor = Color.Blue;
-                }
+                botonSeleccionado = botonClickeado;
+                botonSeleccionado.BackColor = Color.Blue;
             }
-            // Si el botón clickeado es el botón vacío (botonN^2), permitir mover el botón seleccionado
-            else if (botonClickeado.Name == "button" + (CantidadPiezasPuzzle.SelectedIndex + 1) * (CantidadPiezasPuzzle.SelectedIndex + 1))
+            else // Si el botón clickeado es el botón vacío (sin texto)
             {
                 if (botonSeleccionado != null)
                 {
@@ -329,17 +316,36 @@ namespace PuzzleSolver_IA
                     Point posBotonClickeado = botonClickeado.Location;
                     Point posBotonSeleccionado = botonSeleccionado.Location;
 
-                    // Intercambiar las posiciones de los botones
-                    botonSeleccionado.Location = posBotonClickeado;
-                    botonClickeado.Location = posBotonSeleccionado;
+                    // Verificar si el botón vacío está adyacente al botón seleccionado
+                    //Se intentó intercambiar la posición de los botones como lo hace mezclarbotones, pero no funcionaba con el click
+                    if (EsAdyacente(posBotonSeleccionado, posBotonClickeado))
+                    {
+                        // Intercambiar el texto/label y el nombre de los botones
+                        string tempText = botonClickeado.Text;
+                        botonClickeado.Text = botonSeleccionado.Text;
+                        botonSeleccionado.Text = tempText;
 
-                    // Deseleccionar el botón seleccionado
-                    botonSeleccionado.BackColor = Color.Gray;
-                    botonSeleccionado = null;
+                        string tempName = botonClickeado.Name;
+                        botonClickeado.Name = botonSeleccionado.Name;
+                        botonSeleccionado.Name = tempName;
+
+                        // Deseleccionar el botón seleccionado
+                        botonSeleccionado.BackColor = Color.Gray;
+                        botonSeleccionado = null;
+                    }
                 }
             }
         }
 
+        // Función para verificar si dos puntos están adyacentes (en horizontal o vertical)
+        private bool EsAdyacente(Point punto1, Point punto2)
+        {
+            int distanciaX = Math.Abs(punto1.X - punto2.X);
+            int distanciaY = Math.Abs(punto1.Y - punto2.Y);
+
+            // Verificar si la distancia en X o en Y es igual a la longitud/altura de un botón
+            return (distanciaX == botonSeleccionado.Width && distanciaY == 0) || (distanciaY == botonSeleccionado.Height && distanciaX == 0);
+        }
 
         //Funcion mezcla de la matriz de botones
         private void MezclarBotones()
