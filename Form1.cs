@@ -15,12 +15,11 @@ namespace PuzzleSolver_IA
         //areglos y bitmaps para subdivisiones
         private Bitmap originalImage;
 
-        // Variables para mantener el estado del espacio vacío
-        private int emptyButtonRow = -1;
-        private int emptyButtonColumn = -1;
-
+        //Boton para intercambio de información de la matriz de botones
         private Button botonSeleccionado = null;
-        private Point botonSeleccionadoPos; // Almacena las coordenadas del primer botón seleccionado
+
+        // Variable para controlar si la función BotonMatriz_Click está activa o no
+        private bool permitirClickBotonMatriz = false;
 
         //===============================================================================================
         //Contenido que se vera al iniciar la apliacion
@@ -36,19 +35,12 @@ namespace PuzzleSolver_IA
             BotonGuardarSolucion.Enabled = false;
             BotonGuardarSolucion.BackColor = Color.LightGray;
 
-            BotonResolver.Enabled = false;
-            BotonResolver.BackColor = Color.LightGray;
-
-            BotonReiniciarImagen.Enabled = false;
-            BotonReiniciarImagen.BackColor = Color.LightGray;
 
             BotonPasosSeguir.Enabled = false;
             BotonPasosSeguir.BackColor = Color.LightGray;
 
             BotonGuardarSolucion.Enabled = false;
             BotonGuardarSolucion.BackColor = Color.LightGray;
-
-            SeleccionSolucionInteligente.Enabled = false;
 
             //Comboboxes predeterminados
             SeleccionTipoPuzzle.SelectedIndex = 1;  //Números
@@ -66,7 +58,6 @@ namespace PuzzleSolver_IA
 
             // Suscribirse al evento Load del formulario
             this.Load += Pantalla_Inicial_Load;
-
     }
 
         //===============================================================================================
@@ -211,9 +202,6 @@ namespace PuzzleSolver_IA
                 // Agregar el PictureBox al panelSolucionPuzzle
                 panelSolucionPuzzle.Controls.Add(pictureBox);
             }
-            // Establecer el color de fondo del panel
-            panelPuzzleContainer.BackColor = Color.LightGray;
-            panelSolucionPuzzle.BackColor = Color.LightGray; // Establecer el color de fondo del panel de solución
         }
 
         //Puzzle numeros
@@ -244,9 +232,10 @@ namespace PuzzleSolver_IA
                         button.Height = buttonSize;
                         button.Location = new Point(x, y);
                         button.Font = new Font("Arial", buttonSize / 4);
+                        button.ForeColor = Color.Black;
                         button.FlatStyle = FlatStyle.Flat;
                         button.FlatAppearance.BorderSize = 1;
-                        button.BackColor = Color.Gray;
+                        button.BackColor = Color.BlanchedAlmond;
 
                         // Asignar un nombre al botón
                         button.Name = "button" + count.ToString();
@@ -286,52 +275,58 @@ namespace PuzzleSolver_IA
             }
             MezclarBotones();
         }
+
+        //Funcion click interactivo del puzzle - intercambia label y nombre de boton para facilitar y optimizar resultados
         private void BotonMatriz_Click(object sender, EventArgs e)
         {
             Button botonClickeado = sender as Button;
 
-            // Si el botón clickeado es el mismo que ya está seleccionado, deseleccionarlo
-            if (botonSeleccionado == botonClickeado)
+            // Verificar si permitirClickBotonMatriz está activo
+            if (permitirClickBotonMatriz)
             {
-                botonClickeado.BackColor = Color.Gray;
-                botonSeleccionado = null;
-                return;
-            }
-
-            // Si el botón clickeado es un botón numerado (button1 hasta buttonN^2-1), permitir selección y deselección
-            if (botonClickeado.Text != "")
-            {
-                if (botonSeleccionado != null)
+                // Si el botón clickeado es el mismo que ya está seleccionado, deseleccionarlo
+                if (botonSeleccionado == botonClickeado)
                 {
-                    botonSeleccionado.BackColor = Color.Gray;
+                    botonClickeado.BackColor = Color.BlanchedAlmond;
+                    botonSeleccionado = null;
+                    return;
                 }
-                botonSeleccionado = botonClickeado;
-                botonSeleccionado.BackColor = Color.Blue;
-            }
-            else // Si el botón clickeado es el botón vacío (sin texto)
-            {
-                if (botonSeleccionado != null)
+
+                // Si el botón clickeado es un botón numerado (button1 hasta buttonN^2-1), permitir selección y deselección
+                if (botonClickeado.Text != "")
                 {
-                    // Obtener las coordenadas del botón clickeado y del botón seleccionado
-                    Point posBotonClickeado = botonClickeado.Location;
-                    Point posBotonSeleccionado = botonSeleccionado.Location;
-
-                    // Verificar si el botón vacío está adyacente al botón seleccionado
-                    //Se intentó intercambiar la posición de los botones como lo hace mezclarbotones, pero no funcionaba con el click
-                    if (EsAdyacente(posBotonSeleccionado, posBotonClickeado))
+                    if (botonSeleccionado != null)
                     {
-                        // Intercambiar el texto/label y el nombre de los botones
-                        string tempText = botonClickeado.Text;
-                        botonClickeado.Text = botonSeleccionado.Text;
-                        botonSeleccionado.Text = tempText;
+                        botonSeleccionado.BackColor = Color.BlanchedAlmond;
+                    }
+                    botonSeleccionado = botonClickeado;
+                    botonSeleccionado.BackColor = Color.Blue;
+                }
+                else // Si el botón clickeado es el botón vacío (sin texto)
+                {
+                    if (botonSeleccionado != null)
+                    {
+                        // Obtener las coordenadas del botón clickeado y del botón seleccionado
+                        Point posBotonClickeado = botonClickeado.Location;
+                        Point posBotonSeleccionado = botonSeleccionado.Location;
 
-                        string tempName = botonClickeado.Name;
-                        botonClickeado.Name = botonSeleccionado.Name;
-                        botonSeleccionado.Name = tempName;
+                        // Verificar si el botón vacío está adyacente al botón seleccionado
+                        //Se intentó intercambiar la posición de los botones como lo hace mezclarbotones, pero no funcionaba con el click
+                        if (EsAdyacente(posBotonSeleccionado, posBotonClickeado))
+                        {
+                            // Intercambiar el texto/label y el nombre de los botones
+                            string tempText = botonClickeado.Text;
+                            botonClickeado.Text = botonSeleccionado.Text;
+                            botonSeleccionado.Text = tempText;
 
-                        // Deseleccionar el botón seleccionado
-                        botonSeleccionado.BackColor = Color.Gray;
-                        botonSeleccionado = null;
+                            string tempName = botonClickeado.Name;
+                            botonClickeado.Name = botonSeleccionado.Name;
+                            botonSeleccionado.Name = tempName;
+
+                            // Deseleccionar el botón seleccionado
+                            botonSeleccionado.BackColor = Color.BlanchedAlmond;
+                            botonSeleccionado = null;
+                        }
                     }
                 }
             }
@@ -347,7 +342,7 @@ namespace PuzzleSolver_IA
             return (distanciaX == botonSeleccionado.Width && distanciaY == 0) || (distanciaY == botonSeleccionado.Height && distanciaX == 0);
         }
 
-        //Funcion mezcla de la matriz de botones
+        //Funcion mezcla de la matriz de botones - la posicion de los botones
         private void MezclarBotones()
         {
             Random rnd = new Random();
@@ -369,23 +364,6 @@ namespace PuzzleSolver_IA
         //===============================================================================================
         //Funciones botones de interfaz
         //===============================================================================================
-
-        //Boton para resetear o reiniciar los parametros para volver a mezclar la imagen
-        private void BotonReiniciarImagen_Click(object sender, EventArgs e)
-        {
-            CantidadPiezasPuzzle.Enabled = true;
-
-            BotonEliminarImagen.Enabled = true;
-            BotonEliminarImagen.BackColor = Color.White;
-
-            BotonReiniciarImagen.Enabled = false;
-            BotonReiniciarImagen.BackColor = Color.LightGray;
-
-            BotonResolver.Enabled = false;
-            BotonResolver.BackColor = Color.LightGray;
-
-            SeleccionSolucionInteligente.Enabled = false;
-        }
 
         //Boton para cargar imagen cuando tipo puzzle es imagen
         private void BotonCargarImagen_Click(object sender, EventArgs e)
@@ -446,19 +424,6 @@ namespace PuzzleSolver_IA
         //Boton para mezclar la matriz de botones
         private void BotonMezclarImagen_Click(object sender, EventArgs e)
         {
-            CantidadPiezasPuzzle.Enabled = false;
-
-            BotonEliminarImagen.Enabled = false;
-            BotonEliminarImagen.BackColor = Color.LightGray;
-
-            BotonReiniciarImagen.Enabled = true;
-            BotonReiniciarImagen.BackColor = Color.White;
-
-            BotonResolver.Enabled = true;
-            BotonResolver.BackColor = Color.White;
-
-            SeleccionSolucionInteligente.Enabled = true;
-
             if (SeleccionTipoPuzzle.SelectedItem == "Imagen")
             {
                 int divisions = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
@@ -481,6 +446,65 @@ namespace PuzzleSolver_IA
             if (SeleccionSolucionInteligente.SelectedItem == "Anchura")
             {
 
+            }
+        }
+
+        //Boton para resetear o reiniciar los parametros para volver a mezclar la imagen
+        private void BotonIniciarTerminarPuzzle_Click(object sender, EventArgs e)
+        {
+            //Cuando el boton inicia la partida
+            if (BotonIniciarTerminarPuzzle.Text == "Detener puzzle")
+            {
+                BotonIniciarTerminarPuzzle.Text = "Iniciar puzzle";
+
+                permitirClickBotonMatriz = false;
+
+                BotonMezclarImagen.Enabled = true;
+                BotonMezclarImagen.BackColor = Color.White;
+
+                BotonResolver.Enabled = true;
+                BotonResolver.BackColor = Color.White;
+
+                SeleccionSolucionInteligente.Enabled = true;
+                SeleccionTipoPuzzle.Enabled = true;
+                CantidadPiezasPuzzle.Enabled = true;
+
+                BotonCargarImagen.Enabled = true;
+                BotonCargarImagen.BackColor = Color.White;
+                BotonEliminarImagen.Enabled = true;
+                BotonEliminarImagen.BackColor = Color.White;
+
+                BotonPasosSeguir.Enabled = false;
+                BotonPasosSeguir.BackColor = Color.LightGray;
+                BotonGuardarSolucion.Enabled = false;
+                BotonGuardarSolucion.BackColor = Color.LightGray;
+            }
+            else
+            {
+                //cuando el boton detiene la partida
+                BotonIniciarTerminarPuzzle.Text = "Detener puzzle";
+
+                permitirClickBotonMatriz = true;
+
+                BotonMezclarImagen.Enabled = false;
+                BotonMezclarImagen.BackColor = Color.LightGray;
+
+                BotonResolver.Enabled = false;
+                BotonResolver.BackColor = Color.LightGray;
+
+                SeleccionSolucionInteligente.Enabled = false;
+                SeleccionTipoPuzzle.Enabled = false;
+                CantidadPiezasPuzzle.Enabled = false;
+
+                BotonCargarImagen.Enabled = false;
+                BotonCargarImagen.BackColor = Color.LightGray;
+                BotonEliminarImagen.Enabled = false;
+                BotonEliminarImagen.BackColor = Color.LightGray;
+
+                BotonPasosSeguir.Enabled = false;
+                BotonPasosSeguir.BackColor = Color.LightGray;
+                BotonGuardarSolucion.Enabled = false;
+                BotonGuardarSolucion.BackColor = Color.LightGray;
             }
         }
     }

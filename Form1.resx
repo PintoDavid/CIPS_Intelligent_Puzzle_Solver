@@ -117,4 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label3.Text" xml:space="preserve">
+    <value>Debes mover las piezas hasta
+llegar como se ve en "Objetivo".
+
+Para mover una pieza debes ir a
+"Puzzle a resolver", haz click en una
+pieza con número o imagen que
+esté cerca a la pieza vacía, luego
+haz otro click en espacio vacío.
+
+No puedes arrastrar las piezas
+Solo usar clicks.
+
+Puedes usar una solución inteligente
+(IA) si quieres ver los pasos a seguir
+(o que lo resuelva por ti).
+</value>
+  </data>
 </root>
