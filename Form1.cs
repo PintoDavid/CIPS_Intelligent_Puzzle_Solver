@@ -21,6 +21,15 @@ namespace PuzzleSolver_IA
         // Variable para controlar si la función BotonMatriz_Click está activa o no
         private bool permitirClickBotonMatriz = false;
 
+        // Variable para llevar el seguimiento del tiempo transcurrido
+        private TimeSpan tiempoTranscurrido = TimeSpan.Zero;
+
+        // Variable para indicar si el temporizador está activo o pausado
+        private bool temporizadorActivo = false;
+
+        //Contador de movimientos
+        private int cantidadMovimientos = 0;
+
         //===============================================================================================
         //Contenido que se vera al iniciar la apliacion
         //===============================================================================================
@@ -35,12 +44,14 @@ namespace PuzzleSolver_IA
             BotonGuardarSolucion.Enabled = false;
             BotonGuardarSolucion.BackColor = Color.LightGray;
 
-
             BotonPasosSeguir.Enabled = false;
             BotonPasosSeguir.BackColor = Color.LightGray;
 
             BotonGuardarSolucion.Enabled = false;
             BotonGuardarSolucion.BackColor = Color.LightGray;
+
+            botonReiniciarPuzzle.Enabled = false;
+            botonReiniciarPuzzle.BackColor = Color.LightGray;
 
             //Comboboxes predeterminados
             SeleccionTipoPuzzle.SelectedIndex = 1;  //Números
@@ -58,6 +69,13 @@ namespace PuzzleSolver_IA
 
             // Suscribirse al evento Load del formulario
             this.Load += Pantalla_Inicial_Load;
+
+            // Suscribir el evento Tick del temporizador al manejador de eventos timer_Tick
+            timer.Tick += timer_Tick;
+
+            // Ajustar las propiedades del temporizador
+            timer.Interval = 1000;
+            timer.Enabled = false;
     }
 
         //===============================================================================================
@@ -136,6 +154,9 @@ namespace PuzzleSolver_IA
 
                 BotonEliminarImagen.Enabled = false;
                 BotonEliminarImagen.BackColor = Color.LightGray;
+
+                BotonIniciarTerminarPuzzle.Enabled = false;
+                BotonIniciarTerminarPuzzle.BackColor = Color.LightGray;
             }
         }
 
@@ -154,10 +175,9 @@ namespace PuzzleSolver_IA
             if (CantidadPiezasPuzzle.SelectedItem != null)
             {
                 int divisions = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
-
                 int buttonSize = panelPuzzleContainer.Width / divisions;
-
                 int count = 1;
+
                 for (int i = 0; i < divisions; i++)
                 {
                     for (int j = 0; j < divisions; j++)
@@ -166,25 +186,35 @@ namespace PuzzleSolver_IA
                         int x = j * buttonSize;
                         int y = i * buttonSize;
 
+                        // Crear un botón y asignarle un nombre
+                        Button button = new Button();
+                        button.Width = buttonSize;
+                        button.Height = buttonSize;
+                        button.Location = new Point(x, y);
+                        button.Font = new Font("Arial", buttonSize / 4);
+                        button.ForeColor = Color.Black;
+                        button.FlatStyle = FlatStyle.Flat;
+                        button.FlatAppearance.BorderSize = 1;
+
+                        // Asignar un nombre al botón
+                        button.Name = "button" + count.ToString();
+
                         // Verificar si es el último botón
                         if (count < divisions * divisions)
                         {
-                            // Crear un botón con el número correspondiente y agregarlo al panelPuzzleContainer
-                            Button button = new Button();
-                            button.Width = buttonSize;
-                            button.Height = buttonSize;
-                            button.Location = new Point(x, y);
-                            button.BackgroundImage = originalImage;
-                            button.BackgroundImageLayout = ImageLayout.Stretch;
-                            button.FlatStyle = FlatStyle.Flat;
-                            button.FlatAppearance.BorderSize = 0;
-                            button.BackColor = Color.Gray;
-
-                            // Agregar el botón al panelPuzzleContainer
-                            panelPuzzleContainer.Controls.Add(button);
-
+                            button.Text = count.ToString();
                             count++;
                         }
+                        else
+                        {
+                            button.Name = "button" + (divisions * divisions);
+                        }
+
+                        // Suscribir el botón al evento de clic
+                        button.Click += BotonMatriz_Click;
+
+                        // Agregar el botón al panelPuzzleContainer
+                        panelPuzzleContainer.Controls.Add(button);
                     }
                 }
 
@@ -197,11 +227,12 @@ namespace PuzzleSolver_IA
                 pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
                 pictureBox.Width = panelSolucionPuzzle.Width;
                 pictureBox.Height = panelSolucionPuzzle.Height;
-                pictureBox.Image = originalImage;
+                pictureBox.Image = puzzleImage;
 
                 // Agregar el PictureBox al panelSolucionPuzzle
                 panelSolucionPuzzle.Controls.Add(pictureBox);
             }
+            MezclarBotones();
         }
 
         //Puzzle numeros
@@ -301,6 +332,7 @@ namespace PuzzleSolver_IA
                     }
                     botonSeleccionado = botonClickeado;
                     botonSeleccionado.BackColor = Color.Blue;
+                    TextoBotonSeleccionado.Text = "Botón seleccionado: " + botonSeleccionado.Name;
                 }
                 else // Si el botón clickeado es el botón vacío (sin texto)
                 {
@@ -322,6 +354,12 @@ namespace PuzzleSolver_IA
                             string tempName = botonClickeado.Name;
                             botonClickeado.Name = botonSeleccionado.Name;
                             botonSeleccionado.Name = tempName;
+
+                            // Incrementar el contador de movimientos
+                            cantidadMovimientos++;
+
+                            // Actualizar el texto del Label con el nuevo valor del contador
+                            TextoCantidadMovimientos.Text = "Movimientos realizados: " + cantidadMovimientos.ToString();
 
                             // Deseleccionar el botón seleccionado
                             botonSeleccionado.BackColor = Color.BlanchedAlmond;
@@ -361,6 +399,38 @@ namespace PuzzleSolver_IA
             }
         }
 
+        //Funcion que verifica la solución del puzzle según la posición original de los botones más no por contenido
+
+
+        //===============================================================================================
+        //Funciones información de juego
+        //===============================================================================================
+
+        //Funciónes para contador de tiempo
+        // Manejador del evento Tick del temporizador
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            tiempoTranscurrido = tiempoTranscurrido.Add(TimeSpan.FromSeconds(1));
+
+            // Actualizar el Label con el tiempo transcurrido
+            TextoVariableTiempo.Text = tiempoTranscurrido.ToString(@"hh\:mm\:ss");
+        }
+
+        // Función para iniciar o detener el temporizador
+        private void IniciarDetenerTemporizador()
+        {
+            temporizadorActivo = !temporizadorActivo;
+
+            if (temporizadorActivo)
+            {
+                timer.Start(); // Iniciar el temporizador
+            }
+            else
+            {
+                timer.Stop(); // Detener el temporizador
+            }
+        }
+
         //===============================================================================================
         //Funciones botones de interfaz
         //===============================================================================================
@@ -390,6 +460,9 @@ namespace PuzzleSolver_IA
 
                 CantidadPiezasPuzzle.Enabled = true;
                 SeleccionTipoPuzzle.Enabled = false;
+
+                BotonIniciarTerminarPuzzle.Enabled = true;
+                BotonIniciarTerminarPuzzle.BackColor = Color.White;
             }
             else
             {
@@ -397,6 +470,9 @@ namespace PuzzleSolver_IA
                 BotonCargarImagen.BackColor = Color.White;
 
                 SeleccionTipoPuzzle.Enabled = true;
+
+                BotonIniciarTerminarPuzzle.Enabled = false;
+                BotonIniciarTerminarPuzzle.BackColor = Color.LightGray;
             }
         }
 
@@ -449,18 +525,15 @@ namespace PuzzleSolver_IA
             }
         }
 
-        //Boton para resetear o reiniciar los parametros para volver a mezclar la imagen
+        //Boton para iniciar o pausar el puzzle
         private void BotonIniciarTerminarPuzzle_Click(object sender, EventArgs e)
         {
             //Cuando el boton inicia la partida
-            if (BotonIniciarTerminarPuzzle.Text == "Detener puzzle")
+            if (BotonIniciarTerminarPuzzle.Text == "Pausar puzzle")
             {
                 BotonIniciarTerminarPuzzle.Text = "Iniciar puzzle";
 
                 permitirClickBotonMatriz = false;
-
-                BotonMezclarImagen.Enabled = true;
-                BotonMezclarImagen.BackColor = Color.White;
 
                 BotonResolver.Enabled = true;
                 BotonResolver.BackColor = Color.White;
@@ -478,16 +551,16 @@ namespace PuzzleSolver_IA
                 BotonPasosSeguir.BackColor = Color.LightGray;
                 BotonGuardarSolucion.Enabled = false;
                 BotonGuardarSolucion.BackColor = Color.LightGray;
+
+                botonReiniciarPuzzle.Enabled = false;
+                botonReiniciarPuzzle.BackColor = Color.LightGray;
             }
             else
             {
                 //cuando el boton detiene la partida
-                BotonIniciarTerminarPuzzle.Text = "Detener puzzle";
+                BotonIniciarTerminarPuzzle.Text = "Pausar puzzle";
 
                 permitirClickBotonMatriz = true;
-
-                BotonMezclarImagen.Enabled = false;
-                BotonMezclarImagen.BackColor = Color.LightGray;
 
                 BotonResolver.Enabled = false;
                 BotonResolver.BackColor = Color.LightGray;
@@ -505,7 +578,34 @@ namespace PuzzleSolver_IA
                 BotonPasosSeguir.BackColor = Color.LightGray;
                 BotonGuardarSolucion.Enabled = false;
                 BotonGuardarSolucion.BackColor = Color.LightGray;
+
+                botonReiniciarPuzzle.Enabled = true;
+                botonReiniciarPuzzle.BackColor = Color.White;
             }
+            IniciarDetenerTemporizador(); // Iniciar o detener el temporizador
+
+            BotonMezclarImagen.Enabled = false;
+            BotonMezclarImagen.BackColor = Color.LightGray;
+        }
+
+        //Boton para reinicar el puzzle y activar la opcion para volver a mezclar la imagen
+        private void botonReiniciarPuzzle_Click(object sender, EventArgs e)
+        {
+            //Reinicia el contador
+            cantidadMovimientos = 0;
+            TextoCantidadMovimientos.Text = "Movimientos realizados: " + cantidadMovimientos.ToString();
+
+            BotonIniciarTerminarPuzzle.PerformClick();
+
+            // Reinicia el tiempo
+            tiempoTranscurrido = TimeSpan.Zero;
+
+            // Actualiza el Label con el tiempo transcurrido reiniciado a 0
+            TextoVariableTiempo.Text = tiempoTranscurrido.ToString(@"hh\:mm\:ss");
+
+            //Habilita de nuevo la posibilidad para mezclar el puzzle
+            BotonMezclarImagen.Enabled = true;
+            BotonMezclarImagen.BackColor = Color.White;
         }
     }
 }
