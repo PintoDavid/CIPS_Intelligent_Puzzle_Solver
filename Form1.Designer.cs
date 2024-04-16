@@ -54,6 +54,7 @@ namespace PuzzleSolver_IA
             this.TextoVariableTiempo = new System.Windows.Forms.Label();
             this.GrupoTipoPuzzle = new System.Windows.Forms.GroupBox();
             this.grupoInicioPuzzle = new System.Windows.Forms.GroupBox();
+            this.botonReiniciarPuzzle = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -62,7 +63,6 @@ namespace PuzzleSolver_IA
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
             this.TextoBotonSeleccionado = new System.Windows.Forms.Label();
-            this.botonReiniciarPuzzle = new System.Windows.Forms.Button();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.GrupoContenidoPuzzle.SuspendLayout();
             this.GrupoContenidoImagenObjetivo.SuspendLayout();
@@ -96,7 +96,7 @@ namespace PuzzleSolver_IA
             "Heurística",
             "Anchura"});
             this.SeleccionSolucionInteligente.Location = new System.Drawing.Point(280, 55);
-            this.SeleccionSolucionInteligente.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.SeleccionSolucionInteligente.Margin = new System.Windows.Forms.Padding(4);
             this.SeleccionSolucionInteligente.Name = "SeleccionSolucionInteligente";
             this.SeleccionSolucionInteligente.Size = new System.Drawing.Size(176, 33);
             this.SeleccionSolucionInteligente.TabIndex = 3;
@@ -107,7 +107,7 @@ namespace PuzzleSolver_IA
             this.BotonResolver.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BotonResolver.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BotonResolver.Location = new System.Drawing.Point(163, 95);
-            this.BotonResolver.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BotonResolver.Margin = new System.Windows.Forms.Padding(4);
             this.BotonResolver.Name = "BotonResolver";
             this.BotonResolver.Size = new System.Drawing.Size(157, 36);
             this.BotonResolver.TabIndex = 4;
@@ -122,7 +122,7 @@ namespace PuzzleSolver_IA
             this.BotonCargarImagen.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BotonCargarImagen.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.BotonCargarImagen.Location = new System.Drawing.Point(464, 30);
-            this.BotonCargarImagen.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BotonCargarImagen.Margin = new System.Windows.Forms.Padding(4);
             this.BotonCargarImagen.Name = "BotonCargarImagen";
             this.BotonCargarImagen.Size = new System.Drawing.Size(115, 36);
             this.BotonCargarImagen.TabIndex = 6;
@@ -136,7 +136,7 @@ namespace PuzzleSolver_IA
             this.BotonPasosSeguir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BotonPasosSeguir.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BotonPasosSeguir.Location = new System.Drawing.Point(29, 31);
-            this.BotonPasosSeguir.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BotonPasosSeguir.Margin = new System.Windows.Forms.Padding(4);
             this.BotonPasosSeguir.Name = "BotonPasosSeguir";
             this.BotonPasosSeguir.Size = new System.Drawing.Size(192, 36);
             this.BotonPasosSeguir.TabIndex = 7;
@@ -164,7 +164,7 @@ namespace PuzzleSolver_IA
             "Imagen",
             "Números"});
             this.SeleccionTipoPuzzle.Location = new System.Drawing.Point(305, 31);
-            this.SeleccionTipoPuzzle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.SeleccionTipoPuzzle.Margin = new System.Windows.Forms.Padding(4);
             this.SeleccionTipoPuzzle.Name = "SeleccionTipoPuzzle";
             this.SeleccionTipoPuzzle.Size = new System.Drawing.Size(144, 33);
             this.SeleccionTipoPuzzle.TabIndex = 9;
@@ -189,7 +189,7 @@ namespace PuzzleSolver_IA
             this.BotonIniciarTerminarPuzzle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BotonIniciarTerminarPuzzle.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.BotonIniciarTerminarPuzzle.Location = new System.Drawing.Point(458, 25);
-            this.BotonIniciarTerminarPuzzle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BotonIniciarTerminarPuzzle.Margin = new System.Windows.Forms.Padding(4);
             this.BotonIniciarTerminarPuzzle.Name = "BotonIniciarTerminarPuzzle";
             this.BotonIniciarTerminarPuzzle.Size = new System.Drawing.Size(123, 68);
             this.BotonIniciarTerminarPuzzle.TabIndex = 12;
@@ -204,7 +204,7 @@ namespace PuzzleSolver_IA
             this.BotonMezclarImagen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BotonMezclarImagen.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.BotonMezclarImagen.Location = new System.Drawing.Point(334, 25);
-            this.BotonMezclarImagen.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BotonMezclarImagen.Margin = new System.Windows.Forms.Padding(4);
             this.BotonMezclarImagen.Name = "BotonMezclarImagen";
             this.BotonMezclarImagen.Size = new System.Drawing.Size(116, 68);
             this.BotonMezclarImagen.TabIndex = 13;
@@ -218,7 +218,7 @@ namespace PuzzleSolver_IA
             this.BotonGuardarSolucion.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BotonGuardarSolucion.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BotonGuardarSolucion.Location = new System.Drawing.Point(249, 31);
-            this.BotonGuardarSolucion.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BotonGuardarSolucion.Margin = new System.Windows.Forms.Padding(4);
             this.BotonGuardarSolucion.Name = "BotonGuardarSolucion";
             this.BotonGuardarSolucion.Size = new System.Drawing.Size(193, 36);
             this.BotonGuardarSolucion.TabIndex = 14;
@@ -231,9 +231,9 @@ namespace PuzzleSolver_IA
             this.GrupoContenidoPuzzle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.GrupoContenidoPuzzle.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.GrupoContenidoPuzzle.Location = new System.Drawing.Point(363, 262);
-            this.GrupoContenidoPuzzle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.GrupoContenidoPuzzle.Margin = new System.Windows.Forms.Padding(4);
             this.GrupoContenidoPuzzle.Name = "GrupoContenidoPuzzle";
-            this.GrupoContenidoPuzzle.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.GrupoContenidoPuzzle.Padding = new System.Windows.Forms.Padding(4);
             this.GrupoContenidoPuzzle.Size = new System.Drawing.Size(429, 430);
             this.GrupoContenidoPuzzle.TabIndex = 15;
             this.GrupoContenidoPuzzle.TabStop = false;
@@ -253,9 +253,9 @@ namespace PuzzleSolver_IA
             this.GrupoContenidoImagenObjetivo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.GrupoContenidoImagenObjetivo.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.GrupoContenidoImagenObjetivo.Location = new System.Drawing.Point(797, 262);
-            this.GrupoContenidoImagenObjetivo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.GrupoContenidoImagenObjetivo.Margin = new System.Windows.Forms.Padding(4);
             this.GrupoContenidoImagenObjetivo.Name = "GrupoContenidoImagenObjetivo";
-            this.GrupoContenidoImagenObjetivo.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.GrupoContenidoImagenObjetivo.Padding = new System.Windows.Forms.Padding(4);
             this.GrupoContenidoImagenObjetivo.Size = new System.Drawing.Size(429, 430);
             this.GrupoContenidoImagenObjetivo.TabIndex = 16;
             this.GrupoContenidoImagenObjetivo.TabStop = false;
@@ -276,7 +276,7 @@ namespace PuzzleSolver_IA
             this.BotonEliminarImagen.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BotonEliminarImagen.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.BotonEliminarImagen.Location = new System.Drawing.Point(587, 30);
-            this.BotonEliminarImagen.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BotonEliminarImagen.Margin = new System.Windows.Forms.Padding(4);
             this.BotonEliminarImagen.Name = "BotonEliminarImagen";
             this.BotonEliminarImagen.Size = new System.Drawing.Size(109, 36);
             this.BotonEliminarImagen.TabIndex = 17;
@@ -298,7 +298,7 @@ namespace PuzzleSolver_IA
             "8",
             "9"});
             this.CantidadPiezasPuzzle.Location = new System.Drawing.Point(304, 69);
-            this.CantidadPiezasPuzzle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CantidadPiezasPuzzle.Margin = new System.Windows.Forms.Padding(4);
             this.CantidadPiezasPuzzle.Name = "CantidadPiezasPuzzle";
             this.CantidadPiezasPuzzle.Size = new System.Drawing.Size(145, 33);
             this.CantidadPiezasPuzzle.TabIndex = 18;
@@ -364,9 +364,9 @@ namespace PuzzleSolver_IA
             this.GrupoTipoPuzzle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.GrupoTipoPuzzle.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.GrupoTipoPuzzle.Location = new System.Drawing.Point(16, 7);
-            this.GrupoTipoPuzzle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.GrupoTipoPuzzle.Margin = new System.Windows.Forms.Padding(4);
             this.GrupoTipoPuzzle.Name = "GrupoTipoPuzzle";
-            this.GrupoTipoPuzzle.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.GrupoTipoPuzzle.Padding = new System.Windows.Forms.Padding(4);
             this.GrupoTipoPuzzle.Size = new System.Drawing.Size(717, 117);
             this.GrupoTipoPuzzle.TabIndex = 17;
             this.GrupoTipoPuzzle.TabStop = false;
@@ -381,13 +381,28 @@ namespace PuzzleSolver_IA
             this.grupoInicioPuzzle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.grupoInicioPuzzle.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.grupoInicioPuzzle.Location = new System.Drawing.Point(15, 132);
-            this.grupoInicioPuzzle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grupoInicioPuzzle.Margin = new System.Windows.Forms.Padding(4);
             this.grupoInicioPuzzle.Name = "grupoInicioPuzzle";
-            this.grupoInicioPuzzle.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grupoInicioPuzzle.Padding = new System.Windows.Forms.Padding(4);
             this.grupoInicioPuzzle.Size = new System.Drawing.Size(719, 123);
             this.grupoInicioPuzzle.TabIndex = 17;
             this.grupoInicioPuzzle.TabStop = false;
             this.grupoInicioPuzzle.Text = "2. Iniciar Puzzle";
+            // 
+            // botonReiniciarPuzzle
+            // 
+            this.botonReiniciarPuzzle.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.botonReiniciarPuzzle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.botonReiniciarPuzzle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.botonReiniciarPuzzle.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.botonReiniciarPuzzle.Location = new System.Drawing.Point(588, 26);
+            this.botonReiniciarPuzzle.Margin = new System.Windows.Forms.Padding(4);
+            this.botonReiniciarPuzzle.Name = "botonReiniciarPuzzle";
+            this.botonReiniciarPuzzle.Size = new System.Drawing.Size(123, 68);
+            this.botonReiniciarPuzzle.TabIndex = 21;
+            this.botonReiniciarPuzzle.Text = "Reiniciar\r\npuzzle";
+            this.botonReiniciarPuzzle.UseVisualStyleBackColor = false;
+            this.botonReiniciarPuzzle.Click += new System.EventHandler(this.botonReiniciarPuzzle_Click);
             // 
             // label1
             // 
@@ -411,9 +426,9 @@ namespace PuzzleSolver_IA
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.groupBox1.Location = new System.Drawing.Point(741, 7);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox1.Size = new System.Drawing.Size(485, 146);
             this.groupBox1.TabIndex = 21;
             this.groupBox1.TabStop = false;
@@ -438,9 +453,9 @@ namespace PuzzleSolver_IA
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.groupBox2.Location = new System.Drawing.Point(744, 158);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox2.Size = new System.Drawing.Size(483, 97);
             this.groupBox2.TabIndex = 22;
             this.groupBox2.TabStop = false;
@@ -455,9 +470,9 @@ namespace PuzzleSolver_IA
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.groupBox3.Location = new System.Drawing.Point(16, 603);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox3.Size = new System.Drawing.Size(339, 112);
             this.groupBox3.TabIndex = 16;
             this.groupBox3.TabStop = false;
@@ -469,9 +484,9 @@ namespace PuzzleSolver_IA
             this.groupBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox4.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.groupBox4.Location = new System.Drawing.Point(16, 262);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox4.Size = new System.Drawing.Size(339, 334);
             this.groupBox4.TabIndex = 23;
             this.groupBox4.TabStop = false;
@@ -501,21 +516,6 @@ namespace PuzzleSolver_IA
             this.TextoBotonSeleccionado.TabIndex = 23;
             this.TextoBotonSeleccionado.Text = "Botón seleccionado:";
             // 
-            // botonReiniciarPuzzle
-            // 
-            this.botonReiniciarPuzzle.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.botonReiniciarPuzzle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.botonReiniciarPuzzle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.botonReiniciarPuzzle.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.botonReiniciarPuzzle.Location = new System.Drawing.Point(588, 26);
-            this.botonReiniciarPuzzle.Margin = new System.Windows.Forms.Padding(4);
-            this.botonReiniciarPuzzle.Name = "botonReiniciarPuzzle";
-            this.botonReiniciarPuzzle.Size = new System.Drawing.Size(123, 68);
-            this.botonReiniciarPuzzle.TabIndex = 21;
-            this.botonReiniciarPuzzle.Text = "Reiniciar\r\npuzzle";
-            this.botonReiniciarPuzzle.UseVisualStyleBackColor = false;
-            this.botonReiniciarPuzzle.Click += new System.EventHandler(this.botonReiniciarPuzzle_Click);
-            // 
             // timer
             // 
             this.timer.Interval = 1000;
@@ -535,7 +535,7 @@ namespace PuzzleSolver_IA
             this.Controls.Add(this.GrupoTipoPuzzle);
             this.Controls.Add(this.GrupoContenidoImagenObjetivo);
             this.Controls.Add(this.GrupoContenidoPuzzle);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.Name = "Pantalla_Inicial";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

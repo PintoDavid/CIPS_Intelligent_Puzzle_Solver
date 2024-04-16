@@ -176,7 +176,24 @@ namespace PuzzleSolver_IA
             {
                 int divisions = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
                 int buttonSize = panelPuzzleContainer.Width / divisions;
-                int count = 1;
+                int count = 0;  //Debe ser 0 para iniciar con la posición del areglo de la imagen
+
+                // Dividir la imagen original en piezas
+                List<Bitmap> puzzlePieces = new List<Bitmap>();
+                int pieceWidth = image.Width / divisions;
+                int pieceHeight = image.Height / divisions;
+
+                for (int i = 0; i < divisions; i++)
+                {
+                    for (int j = 0; j < divisions; j++)
+                    {
+                        int x = j * pieceWidth;
+                        int y = i * pieceHeight;
+                        Rectangle rect = new Rectangle(x, y, pieceWidth, pieceHeight);
+                        Bitmap piece = image.Clone(rect, image.PixelFormat);
+                        puzzlePieces.Add(piece);
+                    }
+                }
 
                 for (int i = 0; i < divisions; i++)
                 {
@@ -186,7 +203,7 @@ namespace PuzzleSolver_IA
                         int x = j * buttonSize;
                         int y = i * buttonSize;
 
-                        // Crear un botón y asignarle un nombre
+                        // Crear un botón
                         Button button = new Button();
                         button.Width = buttonSize;
                         button.Height = buttonSize;
@@ -196,25 +213,31 @@ namespace PuzzleSolver_IA
                         button.FlatStyle = FlatStyle.Flat;
                         button.FlatAppearance.BorderSize = 1;
 
-                        // Asignar un nombre al botón
-                        button.Name = "button" + count.ToString();
-
-                        // Verificar si es el último botón
-                        if (count < divisions * divisions)
+                        if (count < divisions * divisions - 1)
                         {
+                            // Asignar la pieza correspondiente como fondo del botón
+                            button.BackgroundImage = puzzlePieces[count];
+                            button.BackgroundImageLayout = ImageLayout.Stretch;
+
                             button.Text = count.ToString();
-                            count++;
                         }
                         else
                         {
-                            button.Name = "button" + (divisions * divisions);
+                            // No asignar fondo ni texto al último botón
+                            button.BackColor = Color.White;
+                            button.Text = "";
                         }
+
+                        // Asignar un nombre único al botón
+                        button.Name = "button" + count.ToString();
 
                         // Suscribir el botón al evento de clic
                         button.Click += BotonMatriz_Click;
 
                         // Agregar el botón al panelPuzzleContainer
                         panelPuzzleContainer.Controls.Add(button);
+
+                        count++;
                     }
                 }
 
@@ -232,6 +255,7 @@ namespace PuzzleSolver_IA
                 // Agregar el PictureBox al panelSolucionPuzzle
                 panelSolucionPuzzle.Controls.Add(pictureBox);
             }
+
             MezclarBotones();
         }
 
@@ -279,6 +303,7 @@ namespace PuzzleSolver_IA
                         }
                         else
                         {
+                            button.BackColor = Color.White;
                             button.Name = "button" + (divisions*divisions);
                         }
 
@@ -354,6 +379,11 @@ namespace PuzzleSolver_IA
                             string tempName = botonClickeado.Name;
                             botonClickeado.Name = botonSeleccionado.Name;
                             botonSeleccionado.Name = tempName;
+
+                            // Intercambiar los fondos de los botones
+                            Image tempBackground = botonClickeado.BackgroundImage;
+                            botonClickeado.BackgroundImage = botonSeleccionado.BackgroundImage;
+                            botonSeleccionado.BackgroundImage = tempBackground;
 
                             // Incrementar el contador de movimientos
                             cantidadMovimientos++;
@@ -495,6 +525,9 @@ namespace PuzzleSolver_IA
             BotonEliminarImagen.BackColor = Color.LightGray;
             BotonCargarImagen.Enabled = true;
             BotonCargarImagen.BackColor = Color.White;
+
+            BotonIniciarTerminarPuzzle.Enabled = false;
+            BotonIniciarTerminarPuzzle.BackColor = Color.LightGray;
         }
 
         //Boton para mezclar la matriz de botones
@@ -502,8 +535,7 @@ namespace PuzzleSolver_IA
         {
             if (SeleccionTipoPuzzle.SelectedItem == "Imagen")
             {
-                int divisions = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
-                List<Button> buttons = panelPuzzleContainer.Controls.OfType<Button>().ToList();
+                MezclarBotones();
             }
             else
             {
