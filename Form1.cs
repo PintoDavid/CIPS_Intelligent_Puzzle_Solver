@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace PuzzleSolver_IA
     {
         //areglos y bitmaps para subdivisiones
         private Bitmap originalImage;
+        private Bitmap puzzleImage;
+        private Bitmap imagenActualPuzzle;
 
         //Boton para intercambio de información de la matriz de botones
         private Button botonSeleccionado = null;
@@ -224,7 +227,6 @@ namespace PuzzleSolver_IA
                         else
                         {
                             // No asignar fondo ni texto al último botón
-                            button.BackColor = Color.White;
                             button.Text = "";
                         }
 
@@ -242,7 +244,7 @@ namespace PuzzleSolver_IA
                 }
 
                 // Tomar una captura de pantalla del panelPuzzleContainer
-                Bitmap puzzleImage = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
+                puzzleImage = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
                 panelPuzzleContainer.DrawToBitmap(puzzleImage, new Rectangle(0, 0, panelPuzzleContainer.Width, panelPuzzleContainer.Height));
 
                 // Crear un PictureBox para mostrar la imagen del puzzle en el panelSolucionPuzzle
@@ -303,7 +305,6 @@ namespace PuzzleSolver_IA
                         }
                         else
                         {
-                            button.BackColor = Color.White;
                             button.Name = "button" + (divisions*divisions);
                         }
 
@@ -316,7 +317,7 @@ namespace PuzzleSolver_IA
                 }
 
                 // Tomar una captura de pantalla del panelPuzzleContainer
-                Bitmap puzzleImage = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
+                puzzleImage = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
                 panelPuzzleContainer.DrawToBitmap(puzzleImage, new Rectangle(0, 0, panelPuzzleContainer.Width, panelPuzzleContainer.Height));
 
                 // Crear un PictureBox para mostrar la imagen del puzzle en el panelSolucionPuzzle
@@ -396,6 +397,46 @@ namespace PuzzleSolver_IA
                             botonSeleccionado = null;
                         }
                     }
+                    // Capturar la imagen actual del panelPuzzleContainer después de cada clic
+                    Bitmap imagenActualPuzzle = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
+                    panelPuzzleContainer.DrawToBitmap(imagenActualPuzzle, new Rectangle(0, 0, panelPuzzleContainer.Width, panelPuzzleContainer.Height));
+
+                    // Obtener la ruta del directorio donde se encuentra el ejecutable del proyecto
+                    string directorioEjecutable = AppDomain.CurrentDomain.BaseDirectory;
+
+                    // Crear una carpeta "Capturas" en el directorio del ejecutable, si no existe
+                    string carpetaCapturas = Path.Combine(directorioEjecutable, "Capturas");
+                    if (!Directory.Exists(carpetaCapturas))
+                    {
+                        Directory.CreateDirectory(carpetaCapturas);
+                    }
+
+                    // Generar un nombre de archivo único basado en el conteo de movimientos
+                    int count = cantidadMovimientos; // Asegúrate de tener acceso a esta variable en este método
+                    string nombreArchivo = $"movimiento{count}.png";
+
+                    // Combinar la ruta de la carpeta "Capturas" con el nombre del archivo
+                    string rutaImagen = Path.Combine(carpetaCapturas, nombreArchivo);
+
+                    // Guardar la imagen capturada en el archivo en la carpeta "Capturas"
+                    imagenActualPuzzle.Save(rutaImagen, System.Drawing.Imaging.ImageFormat.Png);
+
+                    // Comparar la imagen actual con la imagen original
+                    if (VerificarSolucionPuzzle())
+                    {
+                        // Puzzle ha vuelto a su estado inicial después de algunos movimientos
+                        // Si el puzzle está resuelto, realizar las acciones necesarias
+                        BotonPasosSeguir.Enabled = true;
+                        BotonPasosSeguir.BackColor = Color.White;
+                        TextoEstadoPuzzle.Text = "¡Puzzle resuelto!";
+                    }
+                    else
+                    {
+                        // Si el puzzle no está resuelto, realizar las acciones necesarias
+                        BotonPasosSeguir.Enabled = false;
+                        BotonPasosSeguir.BackColor = Color.LightGray;
+                        TextoEstadoPuzzle.Text = "Puzzle no resuelto";
+                    }
                 }
             }
         }
@@ -430,7 +471,47 @@ namespace PuzzleSolver_IA
         }
 
         //Funcion que verifica la solución del puzzle según la posición original de los botones más no por contenido
+        private bool VerificarSolucionPuzzle()
+        {
+            // Obtener la cantidad de divisiones del puzzle
+            int divisions = int.Parse(CantidadPiezasPuzzle.SelectedItem.ToString());
 
+            // Crear una lista para almacenar los botones
+            List<Button> botonesOrdenados = new List<Button>();
+
+            // Recorrer los controles en el panelPuzzleContainer y agregar los botones a la lista
+            foreach (Control control in panelPuzzleContainer.Controls)
+            {
+                if (control is Button)
+                {
+                    botonesOrdenados.Add((Button)control);
+                }
+            }
+
+            // Ordenar la lista de botones según su posición en el panel
+            botonesOrdenados.Sort((b1, b2) =>
+            {
+                int yComparison = b1.Location.Y.CompareTo(b2.Location.Y);
+                if (yComparison == 0)
+                {
+                    return b1.Location.X.CompareTo(b2.Location.X);
+                }
+                return yComparison;
+            });
+
+            // Comparar el texto de cada botón en la lista ordenada con el texto del botón correspondiente en la solución original
+            int count = 1;
+            foreach (Button boton in botonesOrdenados)
+            {
+                if (boton.Text != count.ToString())
+                {
+                    return false;
+                }
+                count++;
+            }
+
+            return true;
+        }
 
         //===============================================================================================
         //Funciones información de juego
@@ -638,6 +719,13 @@ namespace PuzzleSolver_IA
             //Habilita de nuevo la posibilidad para mezclar el puzzle
             BotonMezclarImagen.Enabled = true;
             BotonMezclarImagen.BackColor = Color.White;
+        }
+
+        //Boton para abrir la ventana con los pasos a seguir - se activa cuando se ha resuelto el puzzle
+        private void BotonPasosSeguir_Click(object sender, EventArgs e)
+        {
+            Form ventanaListaPasos = new Form2();
+            ventanaListaPasos.Show();
         }
     }
 }
