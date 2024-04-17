@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -33,6 +34,14 @@ namespace PuzzleSolver_IA
         //Contador de movimientos
         private int cantidadMovimientos = 0;
 
+        // Declarar la variable como miembro de la clase
+        private string carpetaCapturas;
+
+        private PuzzleState initialState;
+        private PuzzleState finalState;
+
+        private Form2 ventanaListaPasos;
+
         //===============================================================================================
         //Contenido que se vera al iniciar la apliacion
         //===============================================================================================
@@ -47,7 +56,7 @@ namespace PuzzleSolver_IA
             BotonGuardarSolucion.Enabled = false;
             BotonGuardarSolucion.BackColor = Color.LightGray;
 
-            BotonPasosSeguir.Enabled = false;
+            BotonPasosSeguir.Enabled = true;
             BotonPasosSeguir.BackColor = Color.LightGray;
 
             BotonGuardarSolucion.Enabled = false;
@@ -70,6 +79,9 @@ namespace PuzzleSolver_IA
             //Boton para mezclar las piezas
             BotonMezclarImagen.Click += BotonMezclarImagen_Click;
 
+            // Suscribir el evento FormClosing al método FormPrincipal_FormClosing
+            this.FormClosing += FormPrincipal_FormClosing;
+
             // Suscribirse al evento Load del formulario
             this.Load += Pantalla_Inicial_Load;
 
@@ -79,7 +91,9 @@ namespace PuzzleSolver_IA
             // Ajustar las propiedades del temporizador
             timer.Interval = 1000;
             timer.Enabled = false;
-    }
+
+            Form ventanaListaPasos = new Form2();
+        }
 
         //===============================================================================================
         //Ya que es predeterminado el tipo puzzle nuemrico, pues se carga de primero su matriz
@@ -242,6 +256,11 @@ namespace PuzzleSolver_IA
                         count++;
                     }
                 }
+                // Obtener la lista de botones para el estado inicial
+                List<Button> initialStateButtons = ObtenerListaDeBotones(panelPuzzleContainer);
+
+                // Crear el estado inicial del rompecabezas
+                PuzzleState initialState = PuzzleState.GetInitialState(initialStateButtons);
 
                 // Tomar una captura de pantalla del panelPuzzleContainer
                 puzzleImage = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
@@ -259,6 +278,12 @@ namespace PuzzleSolver_IA
             }
 
             MezclarBotones();
+
+            // Obtener la lista de botones para el estado final
+            List<Button> finalStateButtons = ObtenerListaDeBotones(panelSolucionPuzzle);
+
+            // Crear el estado final del rompecabezas
+            PuzzleState finalState = PuzzleState.GetFinalState(finalStateButtons);
         }
 
         //Puzzle numeros
@@ -315,6 +340,11 @@ namespace PuzzleSolver_IA
                         panelPuzzleContainer.Controls.Add(button);
                     }
                 }
+                // Obtener la lista de botones para el estado inicial
+                List<Button> finalStateButtons = ObtenerListaDeBotones(panelPuzzleContainer);
+
+                // Crear el estado inicial del rompecabezas
+                finalState = PuzzleState.GetInitialState(finalStateButtons);
 
                 // Tomar una captura de pantalla del panelPuzzleContainer
                 puzzleImage = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
@@ -330,7 +360,14 @@ namespace PuzzleSolver_IA
                 // Agregar el PictureBox al panelSolucionPuzzle
                 panelSolucionPuzzle.Controls.Add(pictureBox);
             }
+
             MezclarBotones();
+
+            // Obtener la lista de botones para el estado final
+            List<Button> initialStateButtons = ObtenerListaDeBotones(panelSolucionPuzzle);
+
+            // Crear el estado final del rompecabezas
+            initialState = PuzzleState.GetFinalState(initialStateButtons);
         }
 
         //Funcion click interactivo del puzzle - intercambia label y nombre de boton para facilitar y optimizar resultados
@@ -405,10 +442,25 @@ namespace PuzzleSolver_IA
                     string directorioEjecutable = AppDomain.CurrentDomain.BaseDirectory;
 
                     // Crear una carpeta "Capturas" en el directorio del ejecutable, si no existe
-                    string carpetaCapturas = Path.Combine(directorioEjecutable, "Capturas");
+                    carpetaCapturas = Path.Combine(directorioEjecutable, "Movimientos_puzzle");
                     if (!Directory.Exists(carpetaCapturas))
                     {
                         Directory.CreateDirectory(carpetaCapturas);
+                    }
+
+                    // Obtener el tipo seleccionado en el ComboBox
+                    string tipoPuzzle = SeleccionTipoPuzzle.SelectedItem.ToString();
+
+                    // Determinar la carpeta según el tipo de puzzle
+                    //condición ? valor_si_verdadero : valor_si_falso;
+                    string carpetaTipoPuzzle = tipoPuzzle == "Imagen" ? "Imagenes" : "Numeros";
+
+                    // Combinar la ruta de la carpeta "Capturas" con la carpeta del tipo de puzzle
+                    string carpetaTipoPuzzleCompleta = Path.Combine(carpetaCapturas, carpetaTipoPuzzle);
+
+                    if (!Directory.Exists(carpetaTipoPuzzleCompleta))
+                    {
+                        Directory.CreateDirectory(carpetaTipoPuzzleCompleta);
                     }
 
                     // Generar un nombre de archivo único basado en el conteo de movimientos
@@ -416,7 +468,7 @@ namespace PuzzleSolver_IA
                     string nombreArchivo = $"movimiento{count}.png";
 
                     // Combinar la ruta de la carpeta "Capturas" con el nombre del archivo
-                    string rutaImagen = Path.Combine(carpetaCapturas, nombreArchivo);
+                    string rutaImagen = Path.Combine(carpetaTipoPuzzleCompleta, nombreArchivo);
 
                     // Guardar la imagen capturada en el archivo en la carpeta "Capturas"
                     imagenActualPuzzle.Save(rutaImagen, System.Drawing.Imaging.ImageFormat.Png);
@@ -470,6 +522,26 @@ namespace PuzzleSolver_IA
             }
         }
 
+        //Funcion para obtener la matriz de botones ya generados por tipo de puzzle
+        private List<Button> ObtenerListaDeBotones(Panel panel)
+        {
+            List<Button> buttonList = new List<Button>();
+
+            foreach (Control control in panel.Controls)
+            {
+                // Cambiar la declaración de variable local a una forma compatible con versiones anteriores de C#
+                Button button = control as Button;
+
+                if (button != null)
+                {
+                    buttonList.Add(button);
+                }
+            }
+
+            return buttonList;
+        }
+
+        //EXPERIMENTAL - en teoria lo resuelve la misma IA
         //Funcion que verifica la solución del puzzle según la posición original de los botones más no por contenido
         private bool VerificarSolucionPuzzle()
         {
@@ -512,6 +584,7 @@ namespace PuzzleSolver_IA
 
             return true;
         }
+
 
         //===============================================================================================
         //Funciones información de juego
@@ -616,26 +689,29 @@ namespace PuzzleSolver_IA
         {
             if (SeleccionTipoPuzzle.SelectedItem == "Imagen")
             {
-                MezclarBotones();
+                CargarImagenEnPanelPuzzleContainer(originalImage);
             }
             else
             {
                 MostrarMatrizBotones();
-                MezclarBotones();
             }
         }
 
         //Que metodo va a realizar para resolverlo - Depende del combobox SeleccionSolucionInteligente
         private void BotonResolver_Click(object sender, EventArgs e)
         {
+            BotonIniciarTerminarPuzzle.PerformClick();
+
             if (SeleccionSolucionInteligente.SelectedItem == "Profundidad")
             {
-
+                // Resolver el rompecabezas utilizando BFS
+                List<PuzzleState> solutionPath = PuzzleState.BFS(initialState);
             }
             if (SeleccionSolucionInteligente.SelectedItem == "Anchura")
             {
 
             }
+            BotonIniciarTerminarPuzzle.PerformClick();
         }
 
         //Boton para iniciar o pausar el puzzle
@@ -724,8 +800,75 @@ namespace PuzzleSolver_IA
         //Boton para abrir la ventana con los pasos a seguir - se activa cuando se ha resuelto el puzzle
         private void BotonPasosSeguir_Click(object sender, EventArgs e)
         {
-            Form ventanaListaPasos = new Form2();
             ventanaListaPasos.Show();
+        }
+
+        //Pregunta si quiere salir del programa, si confirma, elimina las carpetas son las imagenes
+        private void FormPrincipal_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Mostrar un cuadro de diálogo de confirmación
+            DialogResult resultado = MessageBox.Show("¿Está seguro de que desea salir? Se eliminarán las imágenes generadas al salir.", "Confirmar salida", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            // Si el usuario confirma la salida
+            if (resultado == DialogResult.Yes)
+            {
+                // Eliminar las carpetas creadas
+                EliminarCarpetasCapturas(carpetaCapturas);
+            }
+            else
+            {
+                // Cancelar el cierre del formulario
+                e.Cancel = true;
+            }
+        }
+
+        // Funcion para eliminar carpetas con los movimientos
+        private void EliminarCarpetasCapturas(string carpetaCapturas)
+        {
+            // Verificar si la carpeta de capturas existe
+            if (Directory.Exists(carpetaCapturas))
+            {
+                // Eliminar la carpeta y su contenido
+                Directory.Delete(carpetaCapturas, true);
+            }
+        }
+
+        private void BotonGuardarSolucion_Click(object sender, EventArgs e)
+        {
+            // Crear un cuadro de diálogo de guardar archivo
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            // Establecer las propiedades del cuadro de diálogo
+            saveFileDialog1.Filter = "Archivos de texto (*.txt)|*.txt|Todos los archivos (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 1;
+            saveFileDialog1.RestoreDirectory = true;
+
+            // Mostrar el cuadro de diálogo y esperar la selección del usuario
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                // Obtener la ruta del archivo seleccionada por el usuario
+                string rutaArchivo = saveFileDialog1.FileName;
+
+                try
+                {
+                    // Obtener el texto del TextBox en Form2
+                    string texto = ventanaListaPasos.Text;
+
+                    // Escribir el texto en el archivo de texto seleccionado por el usuario
+                    using (StreamWriter sw = new StreamWriter(rutaArchivo))
+                    {
+                        sw.Write(texto);
+                    }
+
+                    // Mostrar un mensaje de éxito
+                    MessageBox.Show("Solución guardada en " + rutaArchivo, "Guardado Exitoso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    // Mostrar un mensaje de error si ocurre algún problema al guardar
+                    MessageBox.Show("Error al guardar el archivo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }

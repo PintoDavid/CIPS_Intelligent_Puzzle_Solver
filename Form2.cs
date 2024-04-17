@@ -1,23 +1,26 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace PuzzleSolver_IA
 {
-    internal class Form2 : Form
+    public partial class Form2 : Form
     {
-        private void InitializeComponent()
-        {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
-            this.SuspendLayout();
-            // 
-            // Form2
-            // 
-            this.BackColor = System.Drawing.Color.Tan;
-            this.ClientSize = new System.Drawing.Size(1001, 547);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form2";
-            this.Text = "Intelligent Puzzle Solver - Lista Pasos Solucion";
-            this.ResumeLayout(false);
+        private object textBoxPasos;
 
+        public Form2()
+        {
+            InitializeComponent();
+        }
+        public void UpdateStepsText(string text)
+        {
+            textBox1.AppendText(text + Environment.NewLine);
         }
     }
 }
