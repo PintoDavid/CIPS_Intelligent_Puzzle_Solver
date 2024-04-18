@@ -18,9 +18,25 @@ namespace PuzzleSolver_IA
         {
             InitializeComponent();
         }
-        public void UpdateStepsText(string text)
+        public void MostrarMatriz(string[,] matriz)
         {
-            textBox1.AppendText(text + Environment.NewLine);
+            StringBuilder sb = new StringBuilder();
+            int rows = matriz.GetLength(0);
+            int cols = matriz.GetLength(1);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    sb.Append(matriz[i, j]);
+                    if (j < cols - 1)
+                        sb.Append(" ");
+                }
+                if (i < rows - 1)
+                    sb.AppendLine();
+            }
+
+            textBox1.Text = sb.ToString();
         }
     }
 }

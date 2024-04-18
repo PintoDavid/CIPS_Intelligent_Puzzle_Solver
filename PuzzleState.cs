@@ -178,7 +178,8 @@ namespace PuzzleSolver_IA
         // Método para comparar el estado actual con el objetivo final
         public bool IsGoalState()
         {
-            string[,] currentState = GetTextMatrix();
+            string[,] vs = GetTextMatrix();
+            string[,] currentState = vs;
             string[,] finalState = GetFinalState(null).GetTextMatrix();
 
             for (int i = 0; i < currentState.GetLength(0); i++)

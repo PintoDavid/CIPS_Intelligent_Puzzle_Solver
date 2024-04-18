@@ -37,9 +37,6 @@ namespace PuzzleSolver_IA
         // Declarar la variable como miembro de la clase
         private string carpetaCapturas;
 
-        private PuzzleState initialState;
-        private PuzzleState finalState;
-
         private Form2 ventanaListaPasos;
 
         //===============================================================================================
@@ -256,11 +253,12 @@ namespace PuzzleSolver_IA
                         count++;
                     }
                 }
+                /*
                 // Obtener la lista de botones para el estado inicial
                 List<Button> initialStateButtons = ObtenerListaDeBotones(panelPuzzleContainer);
 
                 // Crear el estado inicial del rompecabezas
-                PuzzleState initialState = PuzzleState.GetInitialState(initialStateButtons);
+                PuzzleState initialState = PuzzleState.GetInitialState(initialStateButtons);*/
 
                 // Tomar una captura de pantalla del panelPuzzleContainer
                 puzzleImage = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
@@ -278,12 +276,12 @@ namespace PuzzleSolver_IA
             }
 
             MezclarBotones();
-
+            /*
             // Obtener la lista de botones para el estado final
             List<Button> finalStateButtons = ObtenerListaDeBotones(panelSolucionPuzzle);
 
             // Crear el estado final del rompecabezas
-            PuzzleState finalState = PuzzleState.GetFinalState(finalStateButtons);
+            PuzzleState finalState = PuzzleState.GetFinalState(finalStateButtons);*/
         }
 
         //Puzzle numeros
@@ -340,11 +338,12 @@ namespace PuzzleSolver_IA
                         panelPuzzleContainer.Controls.Add(button);
                     }
                 }
+                /*
                 // Obtener la lista de botones para el estado inicial
                 List<Button> finalStateButtons = ObtenerListaDeBotones(panelPuzzleContainer);
 
                 // Crear el estado inicial del rompecabezas
-                finalState = PuzzleState.GetInitialState(finalStateButtons);
+                finalState = PuzzleState.GetInitialState(finalStateButtons);*/
 
                 // Tomar una captura de pantalla del panelPuzzleContainer
                 puzzleImage = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
@@ -362,12 +361,12 @@ namespace PuzzleSolver_IA
             }
 
             MezclarBotones();
-
+            /*
             // Obtener la lista de botones para el estado final
             List<Button> initialStateButtons = ObtenerListaDeBotones(panelSolucionPuzzle);
 
             // Crear el estado final del rompecabezas
-            initialState = PuzzleState.GetFinalState(initialStateButtons);
+            initialState = PuzzleState.GetFinalState(initialStateButtons);*/
         }
 
         //Funcion click interactivo del puzzle - intercambia label y nombre de boton para facilitar y optimizar resultados
@@ -434,6 +433,7 @@ namespace PuzzleSolver_IA
                             botonSeleccionado = null;
                         }
                     }
+                    /*
                     // Capturar la imagen actual del panelPuzzleContainer después de cada clic
                     Bitmap imagenActualPuzzle = new Bitmap(panelPuzzleContainer.Width, panelPuzzleContainer.Height);
                     panelPuzzleContainer.DrawToBitmap(imagenActualPuzzle, new Rectangle(0, 0, panelPuzzleContainer.Width, panelPuzzleContainer.Height));
@@ -471,7 +471,7 @@ namespace PuzzleSolver_IA
                     string rutaImagen = Path.Combine(carpetaTipoPuzzleCompleta, nombreArchivo);
 
                     // Guardar la imagen capturada en el archivo en la carpeta "Capturas"
-                    imagenActualPuzzle.Save(rutaImagen, System.Drawing.Imaging.ImageFormat.Png);
+                    imagenActualPuzzle.Save(rutaImagen, System.Drawing.Imaging.ImageFormat.Png);*/
 
                     // Comparar la imagen actual con la imagen original
                     if (VerificarSolucionPuzzle())
@@ -705,7 +705,7 @@ namespace PuzzleSolver_IA
             if (SeleccionSolucionInteligente.SelectedItem == "Profundidad")
             {
                 // Resolver el rompecabezas utilizando BFS
-                List<PuzzleState> solutionPath = PuzzleState.BFS(initialState);
+                /*List<PuzzleState> solutionPath = PuzzleState.BFS(initialState);*/
             }
             if (SeleccionSolucionInteligente.SelectedItem == "Anchura")
             {
@@ -807,13 +807,13 @@ namespace PuzzleSolver_IA
         private void FormPrincipal_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Mostrar un cuadro de diálogo de confirmación
-            DialogResult resultado = MessageBox.Show("¿Está seguro de que desea salir? Se eliminarán las imágenes generadas al salir.", "Confirmar salida", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult resultado = MessageBox.Show("¿Está seguro de que desea salir?", "Confirmar salida", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             // Si el usuario confirma la salida
             if (resultado == DialogResult.Yes)
             {
                 // Eliminar las carpetas creadas
-                EliminarCarpetasCapturas(carpetaCapturas);
+                /*EliminarCarpetasCapturas(carpetaCapturas);*/
             }
             else
             {
@@ -822,6 +822,7 @@ namespace PuzzleSolver_IA
             }
         }
 
+        /*
         // Funcion para eliminar carpetas con los movimientos
         private void EliminarCarpetasCapturas(string carpetaCapturas)
         {
@@ -870,5 +871,112 @@ namespace PuzzleSolver_IA
                 }
             }
         }
+        */
     }
+
+    //=========================================================================================
+    //  CLASE PARA METODOS DE BUSQUEDA - LO IMPRIMEN EN UN TEXTBOX DEL FORM2
+    //=========================================================================================
+    /*
+    public class PuzzleState
+    {
+        public string[,] State { get; set; }
+
+        public static PuzzleState GetInitialState(List<Button> buttons)
+        {
+            int rows = (int)Math.Sqrt(buttons.Count);
+            int cols = rows;
+
+            var initialState = new PuzzleState
+            {
+                State = new string[rows, cols]
+            };
+
+            foreach (var button in buttons)
+            {
+                int row = int.Parse(button.Name.Substring(6)) / cols;
+                int col = int.Parse(button.Name.Substring(6)) % cols;
+                if (button.Text == "")
+                    initialState.State[row, col] = "_";
+                else
+                    initialState.State[row, col] = button.Text;
+            }
+
+            return initialState;
+        }
+
+        public static PuzzleState GetFinalState(List<Button> buttons)
+        {
+            int rows = (int)Math.Sqrt(buttons.Count);
+            int cols = rows;
+
+            var finalState = new PuzzleState
+            {
+                State = new string[rows, cols]
+            };
+
+            int count = 1;
+            for (int row = 0; row < rows; row++)
+            {
+                for (int col = 0; col < cols; col++)
+                {
+                    if (count < rows * cols)
+                        finalState.State[row, col] = count.ToString();
+                    else
+                        finalState.State[row, col] = "_";
+                    count++;
+                }
+            }
+
+            return finalState;
+        }
+
+        public static bool BFS(PuzzleState currentState, PuzzleState finalState, int depth, int maxDepth, HashSet<string> visitedStates, List<string> path)
+        {
+            if (depth > maxDepth)
+                return false;
+
+            if (currentState.Equals(finalState))
+                return true;
+
+            visitedStates.Add(currentState.ToString());
+            path.Add(currentState.ToString());
+
+            // Generar los posibles movimientos y explorarlos en profundidad
+            List<PuzzleState> possibleMoves = GeneratePossibleMoves(currentState);
+            foreach (var move in possibleMoves)
+            {
+                if (!visitedStates.Contains(move.ToString()))
+                {
+                    if (BFS(move, finalState, depth + 1, maxDepth, visitedStates, path))
+                        return true;
+                }
+            }
+
+            path.RemoveAt(path.Count - 1); // Deshacer el movimiento actual
+            return false;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            int rows = State.GetLength(0);
+            int cols = State.GetLength(1);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    sb.Append(State[i, j]);
+                    if (j < cols - 1)
+                        sb.Append(" ");
+                }
+                if (i < rows - 1)
+                    sb.AppendLine();
+            }
+
+            return sb.ToString();
+        }
+    }
+    */
 }
